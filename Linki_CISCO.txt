@@ -1,0 +1,8 @@
+Zabezpieczenia STP
+https://itexamanswers.net/14-9-10-packet-tracer-implement-stp-security-answers.html
+
+FHRP (HSRP)
+https://itexamanswers.net/9-3-3-packet-tracer-hsrp-configuration-guide-instructions-answer.html
+
+ETHERCHANNEL
+https://itexamanswers.net/6-2-4-packet-tracer-configure-etherchannel-instructions-answer.html
