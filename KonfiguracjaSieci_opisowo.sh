@@ -1,14 +1,14 @@
 Wymagania projektowe
-    dostępy SSH
+OK  dostępy SSH
     dynamiczny protokoły routingu (OSPF, EIGRP)
 OK  VLANy
     routing między vlanmi
     EtherChannel
     konfiguracja FHRP
-    konfiguracja syslogu
-    konfiguracja NTP
-    konfiguracja AAA
-    konfiguracja serwera DHCP
+OK  konfiguracja syslogu
+OK  konfiguracja NTP
+OK  konfiguracja AAA
+OK  konfiguracja serwera DHCP
     dwie standardowe listy dostępu ACL
     dwie rozszerzone listy dostępu ACL
     zabezpieczenia przez atakami MAC
@@ -41,6 +41,28 @@ hostname R0
 enable password class
 username cisco secret cisco
 ip domain-name r0
+
+#NTP
+#######
+ntp server 191.168.1.3
+service timestamps log datetime msec
+no service timestamps debug datetime msec
+#######
+
+#CISCO IOS
+#######
+logging 191.168.1.3
+#######
+
+#TACACS+
+#######
+tacacs-server host 191.168.1.3
+tacacs-server key cisco
+aaa new-model
+aaa authentication login default group tacacs+ local
+line console 0
+login authentication default
+#######
 
 interface Serial0/0/0
  ip address 1.0.0.2 255.0.0.0
@@ -133,8 +155,17 @@ configure terminal
 service password-encryption
 hostname R2
 enable password class
-username cisco secret cisco
+
+#SSH
+#######
 ip domain-name r2
+username cisco secret cisco
+crypto key generate rsa general-keys modulus 1024
+line vty 0 4
+ transport input ssh
+ login local
+ exit
+#######
 
 interface Serial0/0/0
  ip address 2.0.0.2 255.0.0.0
@@ -156,8 +187,45 @@ write memory
 ############################################################################################################
 #Podsieć 1 - DHCP, SSH, NTP, CISCO IOS, TACACS+
 #S0
+enable
+configure terminal
 
+service password-encryption
+hostname S0
+enable password class
 
+#SSH
+#######
+ip domain-name s0
+username cisco secret cisco
+crypto key generate rsa general-keys modulus 1024
+line vty 0 15
+ transport input ssh
+ login local
+ exit
+#######
+
+#NTP
+#######
+ntp server 191.168.1.3
+service timestamps log datetime msec
+no service timestamps debug datetime msec
+#######
+
+#CISCO IOS
+#######
+logging 191.168.1.3
+#######
+
+interface Vlan1
+ ip address 191.168.1.2 255.255.255.0
+ no shutdown
+ exit
+
+ip default-gateway 191.168.1.1
+
+end
+write memory
 
 ############################################################################################################
 #Podsieć 2 - dwie standardowe listy ACL
@@ -223,6 +291,7 @@ write memory
 enable
 configure terminal
 
+service password-encryption
 hostname S1
 enable password class
 
@@ -256,7 +325,7 @@ interface Vlan1
  exit
 
 #brama domyślna dla switcha 
-ip default-gateway 192.168.1.1
+ip default-gateway 197.168.1.1
 
 end
 write memory
