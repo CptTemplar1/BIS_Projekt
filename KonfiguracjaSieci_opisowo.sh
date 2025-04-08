@@ -14,7 +14,7 @@ OK  dwie rozszerzone listy dostępu ACL
     zabezpieczenia przez atakami MAC
     zabezpieczenia przez atakami VLAN
     zabezpieczenia przez atakami DHCP
-    zabezpieczenia przez atakami STP
+OK  zabezpieczenia przez atakami STP
     konfiguracja poziomów dostępowych na urządzeniach sieciowych
 
 
@@ -314,18 +314,82 @@ write memory
 ############################################################################################################
 #Podsieć 4 - zabezpieczenia przez atakami STP
 #Central
+enable
+configure terminal
 
+service password-encryption
+hostname Central
+enable password class
+
+spanning-tree mode pvst
+spanning-tree vlan 1 root primary
+
+end
+write memory
 
 #S5
+enable
+configure terminal
+
+service password-encryption
+hostname S5
+enable password class
+
+spanning-tree mode pvst
+spanning-tree vlan 1 root secondary
+
+interface range FastEthernet0/23 – 24
+ spanning-tree guard root
+
+end
+write memory
 
 
 #S6
+enable
+configure terminal
+
+service password-encryption
+hostname S6
+enable password class
+
+interface range FastEthernet0/23 – 24
+ spanning-tree guard root
+
+end
+write memory
 
 
 #S7
+enable
+configure terminal
+
+service password-encryption
+hostname S7
+enable password class
+
+interface range FastEthernet0/1 – 4
+ spanning-tree portfast
+ spanning-tree bpduguard enable
+
+end
+write memory
 
 
 #S8
+enable
+configure terminal
+
+service password-encryption
+hostname S8
+enable password class
+
+interface range FastEthernet0/1 – 4
+ spanning-tree portfast
+ spanning-tree bpduguard enable
+
+end
+write memory
 
 
 ############################################################################################################
@@ -362,19 +426,19 @@ interface FastEthernet0/1
  no shutdown
  exit
 
-interface range FastEthernet0/2-3
+interface range FastEthernet0/2 - 3
  switchport mode access
  switchport access vlan 10
  no shutdown
  exit
 
-interface range FastEthernet0/4-5
+interface range FastEthernet0/4 - 5
  switchport mode access
  switchport access vlan 20
  no shutdown
  exit
 
-interface range FastEthernet0/6-7
+interface range FastEthernet0/6 - 7
  switchport mode access
  switchport access vlan 30
  no shutdown
