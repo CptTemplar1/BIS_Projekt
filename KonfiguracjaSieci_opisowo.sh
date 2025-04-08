@@ -9,8 +9,8 @@ OK  konfiguracja syslogu
 OK  konfiguracja NTP
 OK  konfiguracja AAA
 OK  konfiguracja serwera DHCP
-    dwie standardowe listy dostępu ACL
-    dwie rozszerzone listy dostępu ACL
+OK  dwie standardowe listy dostępu ACL
+OK  dwie rozszerzone listy dostępu ACL
     zabezpieczenia przez atakami MAC
     zabezpieczenia przez atakami VLAN
     zabezpieczenia przez atakami DHCP
@@ -230,23 +230,85 @@ write memory
 ############################################################################################################
 #Podsieć 2 - dwie standardowe listy ACL
 #R3
+enable
+configure terminal
 
+service password-encryption
+hostname R3
+enable password class
 
-#S1
+#ACL 10 - blokuje ruch przychodzący z PC2 (192.168.10.2)
+access-list 10 deny 192.168.10.2
+access-list 10 permit any
 
+#ACL 20 - blokuje ruch wychodzący z routera do PC3 (192.168.20.3)
+access-list 20 deny 192.168.20.3
+access-list 20 permit any
 
-#S2
+#Przypisanie ACL do interfejsów
+#######
+interface GigabitEthernet0/0
+ ip address 192.168.10.1 255.255.255.0
+ ip access-group 10 in
+ no shutdown
+ exit
+
+interface GigabitEthernet0/1
+ ip address 192.168.20.1 255.255.255.0
+ ip access-group 20 out
+ no shutdown
+ exit
+#######
+
+interface Serial0/3/0
+ ip address 4.0.0.2 255.0.0.0
+ no shutdown
+ exit
+
+end
+write memory
 
 
 ############################################################################################################
 #Podsieć 3 - dwie rozszerzone listy ACL
 #R4
+enable
+configure terminal
 
+service password-encryption
+hostname R4
+enable password class
 
-#S3
+#ACL 110 – zablokuj HTTP z PC4 w kierunku "świata" (czyli dalej przez R0)
+access-list 110 deny tcp host 193.168.10.4 any eq 80
+access-list 110 permit ip any any
 
+#ACL 120 – zablokuj Telnet z PC5 do dowolnych hostów w tej samej podsieci (193.168.20.0/24)
+access-list 120 deny tcp host 193.168.20.5 193.168.20.0 0.0.0.255 eq 23
+access-list 120 permit ip any any
 
-#S4
+#Przypisanie list ACL do interfejsów
+#######
+interface GigabitEthernet0/0
+ ip address 193.168.10.1 255.255.255.0
+ ip access-group 110 in
+ no shutdown
+ exit
+
+interface GigabitEthernet0/1
+ ip address 193.168.20.1 255.255.255.0
+ ip access-group 120 in
+ no shutdown
+ exit
+#######
+
+interface Serial0/3/0
+ ip address 5.0.0.2 255.0.0.0
+ no shutdown
+ exit
+
+end
+write memory
 
 
 ############################################################################################################
