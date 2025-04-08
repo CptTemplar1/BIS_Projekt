@@ -4,7 +4,7 @@ OK  dostępy SSH
 OK  VLANy
     routing między vlanmi
     EtherChannel
-    konfiguracja FHRP
+OK  konfiguracja FHRP
 OK  konfiguracja syslogu
 OK  konfiguracja NTP
 OK  konfiguracja AAA
@@ -129,6 +129,17 @@ enable password class
 username cisco secret cisco
 ip domain-name r1
 
+#FHRP
+#######
+interface GigabitEthernet0/1
+ ip address 195.168.1.1
+ standby version 2
+ standby 1 ip 195.168.1.254
+ standby 1 priority 150
+ standby 1 preempt
+ exit
+#######
+
 interface Serial0/0/0
  ip address 1.0.0.1 255.0.0.0
  no shutdown
@@ -167,6 +178,15 @@ line vty 0 4
  exit
 #######
 
+#FHRP
+#######
+interface GigabitEthernet0/0
+ ip address 195.168.1.2
+ standby version 2
+ standby 1 ip 195.168.1.254
+ exit
+#######
+
 interface Serial0/0/0
  ip address 2.0.0.2 255.0.0.0
  no shutdown
@@ -179,6 +199,8 @@ interface Serial0/0/1
 
 interface GigabitEthernet0/1
  ip address 196.168.1.1 255.255.255.0
+ no shutdown
+ exit
 
 end
 write memory
@@ -395,10 +417,31 @@ write memory
 ############################################################################################################
 #Podsieć 5 - FHRP (HSRP)
 #S9
+enable
+configure terminal
+
+service password-encryption
+hostname S9
+enable password class
+
+ip default-gateway 195.168.1.254
+
+end
+write memory
 
 
 #S10
+enable
+configure terminal
 
+service password-encryption
+hostname S10
+enable password class
+
+ip default-gateway 195.168.1.254
+
+end
+write memory
 
 ############################################################################################################
 #Podsieć 6 - EtherChannel
