@@ -444,15 +444,95 @@ end
 write memory
 
 ############################################################################################################
-#Podsieć 6 - EtherChannel
+#Podsieć 6 - EtherChannel (do weryfikacji)
 #S11
+enable
+config terminal
 
+service password-encryption
+hostname S11
+enable password class
+
+interface range FastEthernet0/1 – 2
+ switchport mode trunk
+ channel-protocol pagp
+ channel-group 1 mode desirable
+ no shutdown
+
+interface port-channel 1
+ switchport mode trunk
+
+interface range FastEthernet0/3 - 4
+ switchport mode trunk
+ channel-protocol lacp
+ channel-group 2 mode active
+ no shutdown
+
+interface port-channel 2
+ switchport mode trunk
+
+spanning-tree vlan 1 root primary
+
+end
+write memory
 
 #S12
+enable
+config terminal
 
+service password-encryption
+hostname S12
+enable password class
+
+interface range FastEthernet0/3 - 4
+ switchport mode trunk
+ channel-protocol lacp
+ channel-group 2 mode active
+ no shutdown
+
+interface port-channel 2
+ switchport mode trunk
+
+interface range FastEthernet0/5 - 6
+ switchport mode trunk
+ channel-protocol lacp
+ channel-group 3 mode passive
+ no shutdown
+
+interface port-channel 3
+ switchport mode trunk
+
+end
+write memory
 
 #S13
+enable
+config terminal
 
+service password-encryption
+hostname S13
+enable password class
+
+interface range FastEthernet0/1 – 2
+ switchport mode trunk
+ channel-protocol pagp
+ channel-group 1 mode desirable
+ no shutdown
+
+interface port-channel 1
+ switchport mode trunk
+
+interface range FastEthernet0/5 - 6
+ switchport mode trunk
+ channel-protocol lacp
+ channel-group 3 mode active
+ no shutdown
+
+interface port-channel 3
+ switchport mode trunk
+
+end
+write memory
 
 ############################################################################################################
 #Podsieć 7 - VLANy, routing między VLANami, zabezpieczenia przez atakami VLAN
