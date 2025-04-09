@@ -1,6 +1,6 @@
 Wymagania projektowe
 OK  dostępy SSH
-    dynamiczny protokoły routingu (OSPF, EIGRP)
+OK  dynamiczny protokoły routingu (OSPF, EIGRP)
 OK  VLANy
 OK  routing między vlanmi
 OK  EtherChannel
@@ -11,7 +11,7 @@ OK  konfiguracja AAA
 OK  konfiguracja serwera DHCP
 OK  dwie standardowe listy dostępu ACL
 OK  dwie rozszerzone listy dostępu ACL
-    zabezpieczenia przez atakami MAC
+OK  zabezpieczenia przez atakami MAC
 OK  zabezpieczenia przez atakami VLAN
 OK  zabezpieczenia przez atakami DHCP
 OK  zabezpieczenia przez atakami STP
@@ -115,6 +115,19 @@ interface GigabitEthernet0/0.30
  exit
 #######
 
+#ROUTING OSPF
+#######
+router ospf 1
+ router-id 0.0.0.1
+ network 1.0.0.0 0.255.255.255 area 0
+ network 3.0.0.0 0.255.255.255 area 0
+ network 4.0.0.0 0.255.255.255 area 0
+ network 5.0.0.0 0.255.255.255 area 0
+ network 191.168.1.0 0.0.0.255 area 0
+ network 197.168.0.0 0.0.255.255 area 0
+ exit
+#######
+
 end
 write memory
 
@@ -154,6 +167,17 @@ interface GigabitEthernet0/0
  ip address 194.168.1.1 255.255.255.0
  no shutdown
  exit
+
+#ROUTING OSPF
+#######
+router ospf 1
+ router-id 1.1.1.1
+ network 1.0.0.0 0.255.255.255 area 0
+ network 2.0.0.0 0.255.255.255 area 0
+ network 194.168.1.0 0.0.0.255 area 0
+ network 195.168.1.0 0.0.0.255 area 0
+ exit
+#######
 
 end
 write memory
@@ -201,6 +225,17 @@ interface GigabitEthernet0/1
  ip address 196.168.1.1 255.255.255.0
  no shutdown
  exit
+
+#ROUTING OSPF
+#######
+router ospf 1
+ router-id 2.2.2.2
+ network 2.0.0.0 0.255.255.255 area 0
+ network 3.0.0.0 0.255.255.255 area 0
+ network 195.168.1.0 0.0.0.255 area 0
+ network 196.168.1.0 0.0.0.255 area 0
+ exit
+#######
 
 end
 write memory
@@ -317,6 +352,16 @@ interface Serial0/3/0
  no shutdown
  exit
 
+#ROUTING OSPF
+#######
+router ospf 1
+ router-id 3.3.3.3
+ network 4.0.0.0 0.255.255.255 area 0
+ network 192.168.10.0 0.0.0.255 area 0
+ network 192.168.20.0 0.0.0.255 area 0
+ exit
+#######
+
 end
 write memory
 
@@ -358,6 +403,16 @@ interface Serial0/3/0
  ip address 5.0.0.2 255.0.0.0
  no shutdown
  exit
+
+#ROUTING OSPF
+#######
+router ospf 1
+ router-id 4.4.4.4
+ network 5.0.0.0 0.255.255.255 area 0
+ network 193.168.10.0 0.0.0.255 area 0
+ network 193.168.20.0 0.0.0.255 area 0
+ exit
+#######
 
 end
 write memory
