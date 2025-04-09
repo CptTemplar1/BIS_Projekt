@@ -2,8 +2,8 @@ Wymagania projektowe
 OK  dostępy SSH
     dynamiczny protokoły routingu (OSPF, EIGRP)
 OK  VLANy
-    routing między vlanmi
-    EtherChannel
+OK  routing między vlanmi
+OK  EtherChannel
 OK  konfiguracja FHRP
 OK  konfiguracja syslogu
 OK  konfiguracja NTP
@@ -12,8 +12,8 @@ OK  konfiguracja serwera DHCP
 OK  dwie standardowe listy dostępu ACL
 OK  dwie rozszerzone listy dostępu ACL
     zabezpieczenia przez atakami MAC
-    zabezpieczenia przez atakami VLAN
-    zabezpieczenia przez atakami DHCP
+OK  zabezpieczenia przez atakami VLAN
+OK  zabezpieczenia przez atakami DHCP
 OK  zabezpieczenia przez atakami STP
     konfiguracja poziomów dostępowych na urządzeniach sieciowych
 
@@ -245,6 +245,25 @@ interface Vlan1
  exit
 
 ip default-gateway 191.168.1.1
+
+#ZABEZPIECZENIA PRZED ATAKAMI DHCP
+#######
+#Włączenie DHCP snooping globalnie
+ip dhcp snooping
+
+#Włączenie DHCP snooping dla VLAN 1
+ip dhcp snooping vlan 1
+
+#Port połączony z serwerem DHCP (Server0 na Fa0/3) musi być zaufany
+interface FastEthernet0/3
+ ip dhcp snooping trust
+ exit
+
+#Ogranicz liczbę pakietów DHCP z niezaufanych portów (ochrona przed floodingiem)
+interface range FastEthernet0/1, FastEthernet0/2, FastEthernet0/4
+ ip dhcp snooping limit rate 5
+ exit
+#######
 
 end
 write memory
@@ -575,6 +594,38 @@ interface Vlan1
 
 #brama domyślna dla switcha 
 ip default-gateway 197.168.1.1
+
+#ZABEZPIECZENIA PRZED ATAKAMI VLAN
+#######
+#Utworzenie VLANu 999 do izolacji nieużywanych portów
+vlan 999
+ name VLAN_UNUSED
+exit
+
+#Wyłączanie nieużywanych portów
+interface range Fa0/8 - 24
+ switchport mode access
+ switchport access vlan 999
+ shutdown
+exit
+
+#Zabezpieczenie portów dostępowych
+interface range Fa0/2 - 7
+ switchport mode access
+ switchport nonegotiate
+ switchport port-security
+ switchport port-security maximum 1
+ switchport port-security violation restrict
+ switchport port-security mac-address sticky
+exit
+
+# Port trunk
+interface Fa0/1
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
+ switchport nonegotiate
+exit
+#######
 
 end
 write memory
