@@ -15,19 +15,9 @@ OK  zabezpieczenia przez atakami MAC
 OK  zabezpieczenia przez atakami VLAN
 OK  zabezpieczenia przez atakami DHCP
 OK  zabezpieczenia przez atakami STP
-    konfiguracja poziomów dostępowych na urządzeniach sieciowych
+OK  konfiguracja poziomów dostępowych na urządzeniach sieciowych
 
 
-
-
-############################################################################################################
-############################################################################################################
-SCHEMAT SIECI
-############################################################################################################
-
-
-
-############################################################################################################
 ############################################################################################################
 KONFIGURACJA URZĄDZEŃ SIECIOWYCH
 ############################################################################################################
@@ -39,30 +29,45 @@ configure terminal
 service password-encryption
 hostname R0
 enable password class
-username cisco secret cisco
 ip domain-name r0
 
-#NTP
-#######
+! #POZIOMY DOSTĘPU
+! #######
+username admin privilege 15 secret admin123
+username technik privilege 10 secret technik123
+username junior privilege 5 secret junior123
+
+! #Dostępne polecenia dla poziomu 5 (junior)
+privilege exec level 5 ping
+privilege exec level 5 show ip interface brief
+
+! #Dostępne polecenia dla poziomu 10 (technik)
+privilege exec level 10 show running-config
+privilege exec level 10 show interfaces
+privilege exec level 10 show version
+! #######
+
+! #NTP
+! #######
 ntp server 191.168.1.3
 service timestamps log datetime msec
 no service timestamps debug datetime msec
-#######
+! #######
 
-#CISCO IOS
-#######
+! #CISCO IOS
+! #######
 logging 191.168.1.3
-#######
+! #######
 
-#TACACS+
-#######
+! #TACACS+
+! #######
 tacacs-server host 191.168.1.3
 tacacs-server key cisco
 aaa new-model
 aaa authentication login default group tacacs+ local
 line console 0
 login authentication default
-#######
+! #######
 
 interface Serial0/0/0
  ip address 1.0.0.2 255.0.0.0
@@ -89,8 +94,8 @@ interface GigabitEthernet0/0
  no shutdown
  exit
 
-#VLANy
-#######
+! #VLANy
+! #######
 interface GigabitEthernet0/1
  no ip address
  no shutdown
@@ -113,10 +118,10 @@ interface GigabitEthernet0/0.30
  ip address 197.168.3.1 255.255.255.0
  no shutdown
  exit
-#######
+! #######
 
-#ROUTING OSPF
-#######
+! #ROUTING OSPF
+! #######
 router ospf 1
  router-id 0.0.0.1
  network 1.0.0.0 0.255.255.255 area 0
@@ -126,7 +131,7 @@ router ospf 1
  network 191.168.1.0 0.0.0.255 area 0
  network 197.168.0.0 0.0.255.255 area 0
  exit
-#######
+! #######
 
 end
 write memory
@@ -142,8 +147,8 @@ enable password class
 username cisco secret cisco
 ip domain-name r1
 
-#FHRP
-#######
+! #FHRP
+! #######
 interface GigabitEthernet0/1
  ip address 195.168.1.1
  standby version 2
@@ -151,7 +156,7 @@ interface GigabitEthernet0/1
  standby 1 priority 150
  standby 1 preempt
  exit
-#######
+! #######
 
 interface Serial0/0/0
  ip address 1.0.0.1 255.0.0.0
@@ -168,8 +173,8 @@ interface GigabitEthernet0/0
  no shutdown
  exit
 
-#ROUTING OSPF
-#######
+! #ROUTING OSPF
+! #######
 router ospf 1
  router-id 1.1.1.1
  network 1.0.0.0 0.255.255.255 area 0
@@ -177,7 +182,7 @@ router ospf 1
  network 194.168.1.0 0.0.0.255 area 0
  network 195.168.1.0 0.0.0.255 area 0
  exit
-#######
+! #######
 
 end
 write memory
@@ -191,8 +196,8 @@ service password-encryption
 hostname R2
 enable password class
 
-#SSH
-#######
+! #SSH
+! #######
 ip domain-name r2
 username cisco secret cisco
 crypto key generate rsa general-keys modulus 1024
@@ -200,16 +205,16 @@ line vty 0 4
  transport input ssh
  login local
  exit
-#######
+! #######
 
-#FHRP
-#######
+! #FHRP
+! #######
 interface GigabitEthernet0/0
  ip address 195.168.1.2
  standby version 2
  standby 1 ip 195.168.1.254
  exit
-#######
+! #######
 
 interface Serial0/0/0
  ip address 2.0.0.2 255.0.0.0
@@ -226,8 +231,8 @@ interface GigabitEthernet0/1
  no shutdown
  exit
 
-#ROUTING OSPF
-#######
+! #ROUTING OSPF
+! #######
 router ospf 1
  router-id 2.2.2.2
  network 2.0.0.0 0.255.255.255 area 0
@@ -235,7 +240,7 @@ router ospf 1
  network 195.168.1.0 0.0.0.255 area 0
  network 196.168.1.0 0.0.0.255 area 0
  exit
-#######
+! #######
 
 end
 write memory
@@ -251,28 +256,44 @@ service password-encryption
 hostname S0
 enable password class
 
-#SSH
-#######
+! #POZIOMY DOSTĘPU
+! #######
+username admin privilege 15 secret admin123
+username technik privilege 10 secret technik123
+username junior privilege 5 secret junior123
+
+! #Dostępne polecenia dla poziomu 5 (junior)
+privilege exec level 5 ping
+privilege exec level 5 show ip interface brief
+
+! #Dostępne polecenia dla poziomu 10 (technik)
+privilege exec level 10 show running-config
+privilege exec level 10 show interfaces
+privilege exec level 10 show version
+! #######
+
+! #SSH
+! #######
 ip domain-name s0
-username cisco secret cisco
 crypto key generate rsa general-keys modulus 1024
 line vty 0 15
+ privilege level 1
  transport input ssh
  login local
  exit
-#######
+! #######
 
-#NTP
-#######
+! #NTP
+! #######
 ntp server 191.168.1.3
 service timestamps log datetime msec
 no service timestamps debug datetime msec
-#######
+! #######
 
-#CISCO IOS
-#######
+! #CISCO IOS
+! #######
 logging 191.168.1.3
-#######
+! #######
 
 interface Vlan1
  ip address 191.168.1.2 255.255.255.0
@@ -281,27 +302,27 @@ interface Vlan1
 
 ip default-gateway 191.168.1.1
 
-#ZABEZPIECZENIA PRZED ATAKAMI DHCP
-#######
-#Włączenie DHCP snooping globalnie
+! #ZABEZPIECZENIA PRZED ATAKAMI DHCP
+! #######
+! #Włączenie DHCP snooping globalnie
 ip dhcp snooping
 
-#Włączenie DHCP snooping dla VLAN 1
+! #Włączenie DHCP snooping dla VLAN 1
 ip dhcp snooping vlan 1
 
-#Port połączony z serwerem DHCP (Server0 na Fa0/3) musi być zaufany
+! #Port połączony z serwerem DHCP (Server0 na Fa0/3) musi być zaufany
 interface FastEthernet0/3
  ip dhcp snooping trust
  exit
 
-#Ogranicz liczbę pakietów DHCP z niezaufanych portów (ochrona przed floodingiem)
+! #Ogranicz liczbę pakietów DHCP z niezaufanych portów (ochrona przed floodingiem)
 interface range FastEthernet0/1, FastEthernet0/2, FastEthernet0/4
  ip dhcp snooping limit rate 5
  exit
-#######
+! #######
 
-#ZABEZPIECZENIA PRZED ATAKAMI MAC
-#######
+! #ZABEZPIECZENIA PRZED ATAKAMI MAC
+! #######
 interface range FastEthernet0/2, FastEthernet0/4
  switchport mode access
  switchport port-security
@@ -309,7 +330,7 @@ interface range FastEthernet0/2, FastEthernet0/4
  switchport port-security violation restrict
  switchport port-security mac-address sticky
  exit
-#######
+! #######
 
 end
 write memory
@@ -324,16 +345,16 @@ service password-encryption
 hostname R3
 enable password class
 
-#ACL 10 - blokuje ruch przychodzący z PC2 (192.168.10.2)
+! #ACL 10 - blokuje ruch przychodzący z PC2 (192.168.10.2)
 access-list 10 deny 192.168.10.2
 access-list 10 permit any
 
-#ACL 20 - blokuje ruch wychodzący z routera do PC3 (192.168.20.3)
+! #ACL 20 - blokuje ruch wychodzący z routera do PC3 (192.168.20.3)
 access-list 20 deny 192.168.20.3
 access-list 20 permit any
 
-#Przypisanie ACL do interfejsów
-#######
+! #Przypisanie ACL do interfejsów
+! #######
 interface GigabitEthernet0/0
  ip address 192.168.10.1 255.255.255.0
  ip access-group 10 in
@@ -345,22 +366,22 @@ interface GigabitEthernet0/1
  ip access-group 20 out
  no shutdown
  exit
-#######
+! #######
 
 interface Serial0/3/0
  ip address 4.0.0.2 255.0.0.0
  no shutdown
  exit
 
-#ROUTING OSPF
-#######
+! #ROUTING OSPF
+! #######
 router ospf 1
  router-id 3.3.3.3
  network 4.0.0.0 0.255.255.255 area 0
  network 192.168.10.0 0.0.0.255 area 0
  network 192.168.20.0 0.0.0.255 area 0
  exit
-#######
+! #######
 
 end
 write memory
@@ -376,16 +397,16 @@ service password-encryption
 hostname R4
 enable password class
 
-#ACL 110 – zablokuj HTTP z PC4 w kierunku "świata" (czyli dalej przez R0)
+! #ACL 110 – zablokuj HTTP z PC4 w kierunku "świata" (czyli dalej przez R0)
 access-list 110 deny tcp host 193.168.10.4 any eq 80
 access-list 110 permit ip any any
 
-#ACL 120 – zablokuj Telnet z PC5 do dowolnych hostów w tej samej podsieci (193.168.20.0/24)
+! #ACL 120 – zablokuj Telnet z PC5 do dowolnych hostów w tej samej podsieci (193.168.20.0/24)
 access-list 120 deny tcp host 193.168.20.5 193.168.20.0 0.0.0.255 eq 23
 access-list 120 permit ip any any
 
-#Przypisanie list ACL do interfejsów
-#######
+! #Przypisanie list ACL do interfejsów
+! #######
 interface GigabitEthernet0/0
  ip address 193.168.10.1 255.255.255.0
  ip access-group 110 in
@@ -397,22 +418,22 @@ interface GigabitEthernet0/1
  ip access-group 120 in
  no shutdown
  exit
-#######
+! #######
 
 interface Serial0/3/0
  ip address 5.0.0.2 255.0.0.0
  no shutdown
  exit
 
-#ROUTING OSPF
-#######
+! #ROUTING OSPF
+! #######
 router ospf 1
  router-id 4.4.4.4
  network 5.0.0.0 0.255.255.255 area 0
  network 193.168.10.0 0.0.0.255 area 0
  network 193.168.20.0 0.0.0.255 area 0
  exit
-#######
+! #######
 
 end
 write memory
@@ -652,30 +673,30 @@ interface range FastEthernet0/6 - 7
  no shutdown
  exit
 
-#główny vlan do zarządzania switchem
+! #główny vlan do zarządzania switchem
 interface Vlan1
  ip address 197.168.1.10 255.255.255.0
  no shutdown
  exit
 
-#brama domyślna dla switcha 
+! #brama domyślna dla switcha 
 ip default-gateway 197.168.1.1
 
-#ZABEZPIECZENIA PRZED ATAKAMI VLAN
-#######
-#Utworzenie VLANu 999 do izolacji nieużywanych portów
+! #ZABEZPIECZENIA PRZED ATAKAMI VLAN
+! #######
+! #Utworzenie VLANu 999 do izolacji nieużywanych portów
 vlan 999
  name VLAN_UNUSED
 exit
 
-#Wyłączanie nieużywanych portów
+! #Wyłączanie nieużywanych portów
 interface range Fa0/8 - 24
  switchport mode access
  switchport access vlan 999
  shutdown
 exit
 
-#Zabezpieczenie portów dostępowych
+! #Zabezpieczenie portów dostępowych
 interface range Fa0/2 - 7
  switchport mode access
  switchport nonegotiate
@@ -685,13 +706,13 @@ interface range Fa0/2 - 7
  switchport port-security mac-address sticky
 exit
 
-# Port trunk
+! #Port trunk
 interface Fa0/1
  switchport trunk encapsulation dot1q
  switchport mode trunk
  switchport nonegotiate
 exit
-#######
+! #######
 
 end
 write memory
