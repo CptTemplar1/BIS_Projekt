@@ -1,21 +1,21 @@
 Wymagania projektowe
-OK  dostępy SSH
-OK  dynamiczny protokoły routingu (OSPF, EIGRP)
-OK  VLANy
-OK  routing między vlanmi
-OK  EtherChannel
-OK  konfiguracja FHRP
-OK  konfiguracja syslogu
-OK  konfiguracja NTP
-OK  konfiguracja AAA
-OK  konfiguracja serwera DHCP
-OK  dwie standardowe listy dostępu ACL
-OK  dwie rozszerzone listy dostępu ACL
-OK  zabezpieczenia przez atakami MAC
-OK  zabezpieczenia przez atakami VLAN
-OK  zabezpieczenia przez atakami DHCP
-OK  zabezpieczenia przez atakami STP
-OK  konfiguracja poziomów dostępowych na urządzeniach sieciowych
+    OK  dostępy SSH
+    OK  dynamiczny protokoły routingu (OSPF, EIGRP)
+    OK  VLANy
+    OK  routing między vlanmi
+    OK  EtherChannel
+    OK  konfiguracja FHRP
+    OK  konfiguracja syslogu
+    OK  konfiguracja NTP
+    OK  konfiguracja AAA
+    OK  konfiguracja serwera DHCP
+    OK  dwie standardowe listy dostępu ACL
+    OK  dwie rozszerzone listy dostępu ACL
+    OK  zabezpieczenia przez atakami MAC
+    OK  zabezpieczenia przez atakami VLAN
+    OK  zabezpieczenia przez atakami DHCP
+    OK  zabezpieczenia przez atakami STP
+    OK  konfiguracja poziomów dostępowych na urządzeniach sieciowych
 
 
 ############################################################################################################
@@ -150,11 +150,12 @@ ip domain-name r1
 ! #FHRP
 ! #######
 interface GigabitEthernet0/1
- ip address 195.168.1.1
+ ip address 195.168.1.1 255.255.255.0
  standby version 2
  standby 1 ip 195.168.1.254
  standby 1 priority 150
  standby 1 preempt
+ no shutdown
  exit
 ! #######
 
@@ -210,9 +211,10 @@ line vty 0 4
 ! #FHRP
 ! #######
 interface GigabitEthernet0/0
- ip address 195.168.1.2
+ ip address 195.168.1.2 255.255.255.0
  standby version 2
  standby 1 ip 195.168.1.254
+ no shutdown
  exit
 ! #######
 
@@ -397,11 +399,11 @@ service password-encryption
 hostname R4
 enable password class
 
-! #ACL 110 – zablokuj HTTP z PC4 w kierunku "świata" (czyli dalej przez R0)
+! #ACL 110 - zablokuj HTTP z PC4 w kierunku "świata" (czyli dalej przez R0)
 access-list 110 deny tcp host 193.168.10.4 any eq 80
 access-list 110 permit ip any any
 
-! #ACL 120 – zablokuj Telnet z PC5 do dowolnych hostów w tej samej podsieci (193.168.20.0/24)
+! #ACL 120 - zablokuj Telnet z PC5 do dowolnych hostów w tej samej podsieci (193.168.20.0/24)
 access-list 120 deny tcp host 193.168.20.5 193.168.20.0 0.0.0.255 eq 23
 access-list 120 permit ip any any
 
@@ -466,7 +468,7 @@ enable password class
 spanning-tree mode pvst
 spanning-tree vlan 1 root secondary
 
-interface range FastEthernet0/23 – 24
+interface range FastEthernet0/23 - 24
  spanning-tree guard root
 
 end
@@ -481,7 +483,7 @@ service password-encryption
 hostname S6
 enable password class
 
-interface range FastEthernet0/23 – 24
+interface range FastEthernet0/23 - 24
  spanning-tree guard root
 
 end
@@ -496,7 +498,7 @@ service password-encryption
 hostname S7
 enable password class
 
-interface range FastEthernet0/1 – 4
+interface range FastEthernet0/1 - 4
  spanning-tree portfast
  spanning-tree bpduguard enable
 
@@ -512,7 +514,7 @@ service password-encryption
 hostname S8
 enable password class
 
-interface range FastEthernet0/1 – 4
+interface range FastEthernet0/1 - 4
  spanning-tree portfast
  spanning-tree bpduguard enable
 
@@ -559,7 +561,7 @@ service password-encryption
 hostname S11
 enable password class
 
-interface range FastEthernet0/1 – 2
+interface range FastEthernet0/1 - 2
  switchport mode trunk
  channel-protocol pagp
  channel-group 1 mode desirable
@@ -619,7 +621,7 @@ service password-encryption
 hostname S13
 enable password class
 
-interface range FastEthernet0/1 – 2
+interface range FastEthernet0/1 - 2
  switchport mode trunk
  channel-protocol pagp
  channel-group 1 mode desirable
@@ -708,10 +710,9 @@ exit
 
 ! #Port trunk
 interface Fa0/1
- switchport trunk encapsulation dot1q
  switchport mode trunk
  switchport nonegotiate
-exit
+ exit
 ! #######
 
 end
