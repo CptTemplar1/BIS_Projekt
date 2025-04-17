@@ -101,19 +101,19 @@ interface GigabitEthernet0/1
  no shutdown
  exit
 
-interface GigabitEthernet0/0.10
+interface GigabitEthernet0/1.10
  encapsulation dot1Q 10
  ip address 197.168.1.1 255.255.255.0
  no shutdown
  exit
 
-interface GigabitEthernet0/0.20
+interface GigabitEthernet0/1.20
  encapsulation dot1Q 20
  ip address 197.168.2.1 255.255.255.0
  no shutdown
  exit
 
-interface GigabitEthernet0/0.30
+interface GigabitEthernet0/1.30
  encapsulation dot1Q 30
  ip address 197.168.3.1 255.255.255.0
  no shutdown
@@ -652,11 +652,6 @@ service password-encryption
 hostname S1
 enable password class
 
-interface FastEthernet0/1
- switchport mode trunk
- no shutdown
- exit
-
 interface range FastEthernet0/2 - 3
  switchport mode access
  switchport access vlan 10
@@ -712,6 +707,7 @@ exit
 interface Fa0/1
  switchport mode trunk
  switchport nonegotiate
+ no shutdown
  exit
 ! #######
 
