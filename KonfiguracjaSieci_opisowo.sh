@@ -33,6 +33,11 @@ ip domain-name r0
 
 ! #POZIOMY DOSTĘPU
 ! #######
+! #Wymuszenie logowania użytkownika
+line console 0
+ login local
+ exit
+
 username admin privilege 15 secret admin123
 username technik privilege 10 secret technik123
 username junior privilege 5 secret junior123
@@ -40,11 +45,12 @@ username junior privilege 5 secret junior123
 ! #Dostępne polecenia dla poziomu 5 (junior)
 privilege exec level 5 ping
 privilege exec level 5 show ip interface brief
+privilege exec level 5 show version
 
 ! #Dostępne polecenia dla poziomu 10 (technik)
 privilege exec level 10 show running-config
 privilege exec level 10 show interfaces
-privilege exec level 10 show version
+privilege exec level 10 configure terminal
 ! #######
 
 ! #NTP
@@ -260,6 +266,11 @@ enable password class
 
 ! #POZIOMY DOSTĘPU
 ! #######
+! #Wymuszenie logowania użytkownika
+line console 0
+ login local
+ exit
+
 username admin privilege 15 secret admin123
 username technik privilege 10 secret technik123
 username junior privilege 5 secret junior123
@@ -267,11 +278,12 @@ username junior privilege 5 secret junior123
 ! #Dostępne polecenia dla poziomu 5 (junior)
 privilege exec level 5 ping
 privilege exec level 5 show ip interface brief
+privilege exec level 5 show version
 
 ! #Dostępne polecenia dla poziomu 10 (technik)
 privilege exec level 10 show running-config
 privilege exec level 10 show interfaces
-privilege exec level 10 show version
+privilege exec level 10 configure terminal
 ! #######
 
 ! #SSH
@@ -351,9 +363,8 @@ enable password class
 access-list 10 deny 192.168.10.2
 access-list 10 permit any
 
-! #ACL 20 - blokuje ruch wychodzący z routera do PC3 (192.168.20.3)
-access-list 20 deny 192.168.20.3
-access-list 20 permit any
+! #ACL 20 - blokuje cały ruch wychodzący z routera na interfejsie
+access-list 20 deny any
 
 ! #Przypisanie ACL do interfejsów
 ! #######
