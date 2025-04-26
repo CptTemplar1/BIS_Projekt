@@ -660,7 +660,7 @@ enable
 configure terminal
 
 service password-encryption
-hostname S1
+hostname S14
 enable password class
 
 interface range FastEthernet0/2 - 3
